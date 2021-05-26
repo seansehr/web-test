@@ -1,6 +1,9 @@
 <template>
   <div id="app">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@5.8.55/css/materialdesignicons.min.css">
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@mdi/font@5.8.55/css/materialdesignicons.min.css"
+    />
     <div id="nav">
       <router-link to="/reservations">Reservations</router-link> |
       <router-link to="/inventory">Inventory</router-link>

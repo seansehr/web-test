@@ -5,5 +5,5 @@ module.exports = {
       aggregateTimeout: 300,
       poll: 500
     }
-  },
+  }
 };
