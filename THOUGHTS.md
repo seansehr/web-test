@@ -41,3 +41,9 @@ Now thinking about the views needed to see if they require any additional info n
 Perhaps a UX library can come in handy to help speed things up
 
 Enough rambling, let's get an api built
+
+Inventory UI nice TODOs:
+1. Better error surfacing
+    1. If an inventory conflicts with another, highlight the one it conflicts with when trying to add a new one.
+    1. Highlight times if end is before start (Buefy doesn't have error highlighting on time inputs)
+1. Fix start time sorting
