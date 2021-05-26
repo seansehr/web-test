@@ -14,14 +14,13 @@ import { Op } from 'sequelize';
 /**
  * Verify the time string is in hh:mm format
  * TODO: Figure out how to get the field name we are verifing so we can get rid of helper functions.
- * @param value The time in hh:mm format
  */
 const verifyTime = (value: string, field: string):void => {
   if (typeof value !== 'string') {
     throw new Error(`${field} must be a string. ${typeof value} was receieved`);
   }
   const [hour, min] = value.split(':').map(i => parseInt(i, 10));
-  if (Number.isNaN(hour) || Number.isNaN(min)) {
+  if (value.match(/^\d{1,2}:\d{2}$/).length === 0 || Number.isNaN(hour) || Number.isNaN(min)) {
     throw new Error(`${field} must be a in hh:mm format. ${value} was receieved`);
   }
   if (min >= 60 || min % 15 !== 0) {
@@ -46,7 +45,6 @@ const convertToDateTime = (value: string): Date => {
   validate: {
     /**
      * Checks if start time is before end time and it doesn't conflict with another entry.
-     * @returns
      */
     validateTimeRange: async function(): Promise<void>{
       const startTime = convertToDateTime(this.start_time);
@@ -58,7 +56,7 @@ const convertToDateTime = (value: string): Date => {
       return inventories.forEach(i => {
         const iStartTime = convertToDateTime(i.start_time);
         const iEndTime = convertToDateTime(i.end_time);
-        if ((startTime >= iStartTime && startTime < iEndTime) || (endTime > iStartTime && endTime <= iEndTime)) {
+        if ((startTime >= iStartTime && startTime < iEndTime) || (startTime < iStartTime && endTime >= iStartTime)) {
           throw new Error(`conflicts with inventory id ${i.id}`);
         }
       })
