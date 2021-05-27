@@ -8,7 +8,9 @@
       <router-link to="/reservations">Reservations</router-link> |
       <router-link to="/inventory">Inventory</router-link>
     </div>
-    <router-view />
+    <div class="body">
+      <router-view />
+    </div>
   </div>
 </template>
 
@@ -32,5 +34,11 @@
       color: #42b983;
     }
   }
+}
+
+.body {
+  margin: 0 auto;
+  max-width: 2000px;
+  width: 90%;
 }
 </style>
