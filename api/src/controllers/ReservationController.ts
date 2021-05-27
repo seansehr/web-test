@@ -18,7 +18,6 @@ export class ReservationController {
         return iYear === year && iMonth === month && iDay === day
       })
     }
-    console.log(entries)
     return res.status(200).json(entries);
   }
 
@@ -52,7 +51,6 @@ export class ReservationController {
       await entry.update(req.body);
       return res.status(200).json(entry);
     } catch (error) {
-      console.log(error);
       return res.status(500).json({errors: error.errors.map(e => e.message)});
     }
   }

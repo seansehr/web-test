@@ -141,7 +141,7 @@
         <th>
           <b-button
             :type="addButtonEnabled ? 'is-success' : 'is-danger is-light'"
-            @click="addInventory"
+            @click="addReservation"
             >Add</b-button
           >
         </th>
@@ -150,9 +150,8 @@
   </div>
 </template>
 
-<script>
-const BASE_PATH = 'http://localhost:9090/reservation'
-import axios from 'axios'
+<script lang="ts">
+import { ReservationApi } from '../lib/api'
 export default {
   data() {
     const years = [2021, 2022, 2023]
@@ -177,17 +176,23 @@ export default {
     }
   },
   computed: {
-    days() {
+    /**
+     * Figure out the number of days in the currently selected month.
+     */
+    days(): number {
       if (this.newMonth !== undefined && this.newYear !== undefined) {
         const max = new Date(this.newYear, this.newMonth, 0).getDate()
         return max
       }
       return 31
     },
-    newDay() {
+    /**
+     * Set the day dropdown to the day of the day shown.
+     */
+    newDay(): number {
       return this.date.getDate()
     },
-    addButtonEnabled() {
+    addButtonEnabled(): boolean {
       return (
         this.newName &&
         this.newEmail &&
@@ -207,42 +212,18 @@ export default {
     date: 'fetchData'
   },
   methods: {
-    toggle(row) {
-      this.$refs.table.toggleDetails(row)
-    },
-    fetchData() {
+    fetchData(): void {
       this.error = null
       this.loading = true
       const date = `${this.date.getFullYear()}-${this.date.getMonth()}-${this.date.getDate()}`
-      axios.get(`${BASE_PATH}/?date=${date}`).then(res => {
-        this.loading = false
-        if (res.statusText !== 'OK') {
-          this.error = 'TODO: Better errors'
-        } else {
-          const data = []
-          res.data.forEach(i => {
-            const item = { ...i, time: new Date(i.time) }
-            const hour = item.time.getHours()
-            const index = data.findIndex(i => i.hour === hour)
-            if (data[index]) {
-              data[index].items.push(item)
-            } else {
-              const time = new Date()
-              time.setMinutes(0)
-              time.setSeconds(0)
-              time.setHours(hour)
-              data.push({
-                hour,
-                time,
-                items: [item]
-              })
-            }
-          })
+      ReservationApi.fetchAll({ date })
+        .then(data => {
+          this.loading = false
           this.data = data
-        }
-      })
+        })
+        .catch(error => (this.error = error))
     },
-    addInventory() {
+    addReservation(): void {
       if (!this.addButtonEnabled) {
         this.error = 'All fields required'
       } else {
@@ -255,48 +236,43 @@ export default {
           this.newMinute,
           0
         )
-        axios
-          .post(`${BASE_PATH}`, {
-            name: this.newName,
-            email: this.newEmail,
-            // eslint-disable-next-line
-            party_size: this.newPartySize,
-            time: time
-          })
-          .then(res => {
-            if (res.statusText !== 'OK') {
-              this.error = res.data.errors.join(', ')
-            } else {
-              this.data = res.data
-              this.fetchData()
-            }
+        ReservationApi.add({
+          name: this.newName,
+          email: this.newEmail,
+          // eslint-disable-next-line
+          party_size: this.newPartySize,
+          time: time
+        })
+          .then(data => {
+            this.data = data
+            this.fetchData()
           })
           .catch(error => {
-            this.error = error.response.data.errors.join(', ')
+            this.error = error
           })
       }
     },
-    deleteReservation(id) {
-      axios
-        .delete(`${BASE_PATH}/${id}`)
-        .then(res => {
-          if (res.statusText !== 'OK') {
-            this.error = res.data.errors.join(', ')
+    deleteReservation(id): void {
+      ReservationApi.delete(id)
+        .then(resId => {
+          if (resId) {
+            const data = this.data.map(time => {
+              return {
+                ...time,
+                items: time.items.filter(i => i.id !== parseInt(resId, 10))
+              }
+            })
+            this.data = data
           } else {
-            if (res.data.id) {
-              const data = this.data.map(time => {
-                return {
-                  ...time,
-                  items: time.items.filter(i => i.id !== res.data.id)
-                }
-              })
-              this.data = data
-            } else {
-              this.fetchData()
-            }
+            this.fetchData()
           }
         })
-        .catch(res => (this.error = res.data.errors.join(', ')))
+        .catch(error => {
+          this.error = error
+        })
+    },
+    toggle(row): void {
+      this.$refs.table.toggleDetails(row)
     }
   }
 }
