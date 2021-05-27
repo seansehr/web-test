@@ -23,22 +23,22 @@ export class InventoryController {
 
   @Get(':id')
   private async get(req: Request, res: Response) {
-    const inventory = await Inventory.findOne({ where: { id: req.params.id } });
-    if (inventory === null) {
+    const entry = await Inventory.findOne({ where: { id: req.params.id } });
+    if (entry === null) {
       return res.sendStatus(404);
     }
-    return res.status(200).json(inventory);
+    return res.status(200).json(entry);
   }
 
   @Put(':id')
   private async update(req: Request, res: Response) {
-    const inventory = await Inventory.findOne({ where: { id: req.params.id } });
-    if (inventory === null) {
+    const entry = await Inventory.findOne({ where: { id: req.params.id } });
+    if (entry === null) {
       return res.sendStatus(404);
     }
     try {
-      await inventory.update(req.body);
-      return res.status(200).json(inventory);
+      await entry.update(req.body);
+      return res.status(200).json(entry);
     } catch (error) {
       console.log(error);
       return res.status(500).json({errors: error.errors.map(e => e.message)});
@@ -47,13 +47,14 @@ export class InventoryController {
 
   @Delete(':id')
   private async delete(req: Request, res: Response) {
-    const inventory = await Inventory.findOne({ where: { id: req.params.id } });
-    if (inventory === null) {
+    const id = req.params.id;
+    const entry = await Inventory.findOne({ where: { id } });
+    if (entry === null) {
       return res.sendStatus(404);
     }
     try {
-      inventory.destroy();
-      return res.status(200).json(inventory.id);
+      entry.destroy();
+      return res.status(200).json({ id });
     }
     catch (error) {
       return res.status(500).json(error.message);

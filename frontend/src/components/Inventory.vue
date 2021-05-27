@@ -79,22 +79,7 @@ export default {
       newStartTime: null,
       newEndTime: null,
       newCapacity: 1,
-      minutesGranularity: 15,
-      columns: [
-        {
-          field: 'start_time',
-          label: 'Start Time',
-          sortable: true
-        },
-        {
-          field: 'end_time',
-          label: 'End Time'
-        },
-        {
-          field: 'capacity',
-          label: 'Capacity'
-        }
-      ]
+      minutesGranularity: 15
     }
   },
   computed: {

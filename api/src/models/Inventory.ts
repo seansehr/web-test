@@ -2,6 +2,7 @@ import {
   Column,
   CreatedAt,
   DeletedAt,
+  HasMany,
   Is,
   IsInt,
   Model,
@@ -10,6 +11,7 @@ import {
   UpdatedAt,
 } from 'sequelize-typescript'
 import { Op } from 'sequelize';
+import { Reservation } from './Reservation';
 
 /**
  * Verify the time string is in hh:mm format
@@ -79,6 +81,9 @@ export class Inventory extends Model<Inventory> {
   @IsInt
   @Column({ allowNull: false})
   capacity: number
+
+  @HasMany(() => Reservation)
+  reservations: Reservation[]
 
   @DeletedAt
   deleted_at: string

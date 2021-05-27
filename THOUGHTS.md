@@ -47,3 +47,4 @@ Inventory UI nice TODOs:
     1. If an inventory conflicts with another, highlight the one it conflicts with when trying to add a new one.
     1. Highlight times if end is before start (Buefy doesn't have error highlighting on time inputs)
 1. Fix start time sorting
+1. Add ability to choose party size numbers
