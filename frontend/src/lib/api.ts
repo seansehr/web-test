@@ -47,7 +47,6 @@ export const ReservationApi = {
     return axios
       .post(`${RESERVATION_URL}`, params)
       .then(res => {
-        console.log(res)
         if (res.statusText !== 'OK') {
           throw new Error(res.data.errors.join(', '))
         }
